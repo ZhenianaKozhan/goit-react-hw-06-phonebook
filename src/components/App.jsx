@@ -1,56 +1,56 @@
-import { useLocalStorage } from 'hooks/useLocalStorage';
-import { nanoid } from 'nanoid';
-import { useMemo } from 'react';
+// import { useLocalStorage } from 'hooks/useLocalStorage';
+// import { useMemo } from 'react';
+// import { ToastContainer, toast } from 'react-toastify';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
-import Filter from './Filter';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contactsSlice';
 
 export default function App() {
-  const [contacts, setContacts] = useLocalStorage('contacts', []);
-  const [filter, setFilter] = useLocalStorage('filter', '');
+  // const [contacts, setContacts] = useLocalStorage('contacts', []);
+  // const [filter, setFilter] = useLocalStorage('filter', '');
+  const contacts = useSelector(state => state.contacts);
 
-  const visibleContacts = useMemo(
-    () =>
-      contacts.filter(contact =>
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-      ),
-    [contacts, filter]
-  );
+  const dispatch = useDispatch();
 
-  const handleSubmit = (values, { resetForm }) => {
+  // const visibleContacts = useMemo(
+  //   () =>
+  //     contacts.filter(contact =>
+  //       contact.name.toLowerCase().includes(filter.toLowerCase())
+  //     ),
+  //   [contacts, filter]
+  // );
+
+  const creatContact = (value, { resetForm }) => {
     const existingContact = contacts.some(
-      contact => contact.name === values.name
+      contact => contact.name === value.name
     );
     if (existingContact) {
-      alert(`${values.name} is already in contacts`);
+      alert(`${value.name} is already in contacts`);
     } else {
-      values.id = nanoid();
-      setContacts([values, ...contacts]);
+      dispatch(addContact(value));
+      // toast.success('Add contact');
     }
+
     resetForm();
   };
 
-  const handleChangeFilter = e => setFilter(e.target.value);
+  // const handleChangeFilter = e => setFilter(e.target.value);
 
-  const onDeleteContact = contactId => {
-    setContacts(prevState =>
-      prevState.filter(contact => contact.id !== contactId)
-    );
-  };
+  // const onDeleteContact = contactId => {
+  //   setContacts(prevState =>
+  //     prevState.filter(contact => contact.id !== contactId)
+  //   );
+  // };
 
   return (
     <div>
       <h1>Phonebook</h1>
-      <ContactForm handleSubmit={handleSubmit} />
+      <ContactForm handleSubmit={creatContact} />
 
       <h2>Contacts</h2>
-      {contacts.length !== 0 && (
-        <Filter filter={filter} handleChangeFilter={handleChangeFilter} />
-      )}
-      <ContactList
-        contacts={visibleContacts}
-        onDeleteContact={onDeleteContact}
-      />
+      <ContactList />
+      {/* <ToastContainer /> */}
     </div>
   );
 }
