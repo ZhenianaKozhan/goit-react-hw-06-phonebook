@@ -1,19 +1,24 @@
 import Filter from 'components/Filter/Filter';
 import ContactItem from './ContactItem';
 import { useSelector } from 'react-redux';
-// import { useMemo } from 'react';
-// import { setFilters } from 'redux/filtersSlice';
+import { useMemo } from 'react';
 
 const ContactList = () => {
   const contacts = useSelector(state => state.contacts);
-  // const filter = useSelector(state => state.filter);
+  const filter = useSelector(state => state.filter);
 
-  // const dispatch = useDispatch();
+  const visibleContacts = useMemo(
+    () =>
+      contacts.filter(contact =>
+        contact.name.toLowerCase().includes(filter.toLowerCase())
+      ),
+    [contacts, filter]
+  );
 
   return (
     <ul>
-      {contacts.length !== 0 && <Filter />}
-      {contacts.map(({ id, name, number }) => (
+      {visibleContacts.length !== 0 && <Filter />}
+      {visibleContacts.map(({ id, name, number }) => (
         <ContactItem key={id} id={id} name={name} number={number} />
       ))}
     </ul>

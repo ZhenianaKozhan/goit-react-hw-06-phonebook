@@ -1,15 +1,34 @@
-import PropTypes from 'prop-types';
 import { Formik } from 'formik';
 import { Button, FormStyled, Input } from './ContactForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contactsSlice';
+import Notiflix from 'notiflix';
 
 const inithialValue = {
   name: '',
   number: '',
 };
 
-const ContactForm = ({ handleSubmit }) => {
+const ContactForm = () => {
+  const contacts = useSelector(state => state.contacts);
+
+  const dispatch = useDispatch();
+
+  const creatContact = (value, { resetForm }) => {
+    const existingContact = contacts.some(
+      contact => contact.name === value.name
+    );
+    if (existingContact) {
+      Notiflix.Notify.failure(`${value.name} is already in contacts`);
+    } else {
+      dispatch(addContact(value));
+      Notiflix.Notify.success('Add contacts');
+    }
+
+    resetForm();
+  };
   return (
-    <Formik initialValues={inithialValue} onSubmit={handleSubmit}>
+    <Formik initialValues={inithialValue} onSubmit={creatContact}>
       <FormStyled>
         <label htmlFor="name">Name</label>
         <Input
@@ -31,10 +50,6 @@ const ContactForm = ({ handleSubmit }) => {
       </FormStyled>
     </Formik>
   );
-};
-
-ContactForm.propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default ContactForm;

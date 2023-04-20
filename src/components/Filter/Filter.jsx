@@ -1,7 +1,12 @@
-import PropTypes from 'prop-types';
 import { FilterForm, Input } from './Filter.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFilters } from 'redux/filtersSlice';
 
-const Filter = ({ filter, handleChangeFilter }) => {
+const Filter = () => {
+  const dispatch = useDispatch();
+  const filter = useSelector(state => state.filter);
+  const handleChangeFilter = e => dispatch(setFilters(e.target.value));
+
   return (
     <FilterForm>
       <label htmlFor="filter">Find contacts by name</label>
@@ -13,11 +18,6 @@ const Filter = ({ filter, handleChangeFilter }) => {
       />
     </FilterForm>
   );
-};
-
-Filter.propTypes = {
-  filter: PropTypes.string,
-  handleChangeFilter: PropTypes.func.isRequired,
 };
 
 export default Filter;
